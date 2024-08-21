@@ -10,7 +10,7 @@ class CreateUser extends UsecaseWithParams<void, CreateUserParams> {
   final AuthenticationRepository _repository;
 
   @override
-  ResultFuture call(CreateUserParams params) async => _repository.createUser(
+  ResultVoid call(CreateUserParams params) async => _repository.createUser(
         createdAt: params.createdAt,
         name: params.name,
         avatar: params.avatar,
