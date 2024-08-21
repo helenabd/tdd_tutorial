@@ -1,6 +1,6 @@
 import 'package:tdd_tutorial/core/core.dart';
 
-abstract class UsecaseWithParams<T, Params> {
+abstract class UsecaseWithParams<Type, Params> {
   const UsecaseWithParams();
 
   ResultFuture<Type> call(Params params);
