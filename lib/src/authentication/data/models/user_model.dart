@@ -12,6 +12,14 @@ class UserModel extends User {
     required super.avatar,
   });
 
+  const UserModel.empty()
+      : this(
+          id: "1",
+          createdAt: '_empty.createdAt',
+          name: '_empty.name',
+          avatar: '_empty.avatar',
+        );
+
   factory UserModel.fromJson(String source) =>
       UserModel.fromMap(jsonDecode(source) as DataMap);
 
@@ -40,12 +48,12 @@ class UserModel extends User {
   DataMap toMap() => {
         'id': id,
         'createdAt': createdAt,
-        'name': name,
         'avatar': avatar,
+        'name': name,
       };
 
   String toJson() => jsonEncode(toMap());
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, name, avatar];
 }
