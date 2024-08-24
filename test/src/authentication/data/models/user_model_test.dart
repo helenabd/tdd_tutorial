@@ -9,7 +9,6 @@
 // thenAnswer -- works when your function is synchronous, when you have a Future
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tdd_tutorial/core/core.dart';
