@@ -56,7 +56,7 @@ void main() {
     });
 
     test(
-        'should return a [ServerFailure] when the call to the remote'
+        'should return a [APIFailure] when the call to the remote'
         'source is unsuccessfull', () async {
       //Arrange - Setup facts, Put Expected outputs or Initilize
       when(
@@ -88,6 +88,46 @@ void main() {
         () => remoteDataSource.createUser(
             createdAt: createdAt, name: name, avatar: avatar),
       ).called(1);
+      verifyNoMoreInteractions(remoteDataSource);
+    });
+  });
+
+  group('getUsers', () {
+    test(
+        'should call the [RemoteDataSource.getUsers] and complete'
+        'successfully when the call to the remote source is successful',
+        () async {
+      //Arrange - Setup facts, Put Expected outputs or Initilize
+      const expectedUser = [UserModel.empty()];
+      when(
+        () => remoteDataSource.getUsers(),
+      ).thenAnswer(
+        (_) async => expectedUser,
+      );
+
+      //Act - Call the function that is to be tested
+      final result = await repoImpl.getUsers();
+
+      //Assert - Compare the actual result and expected result
+      expect(result, isA<Right<dynamic, List<User>>>());
+      verify(() => remoteDataSource.getUsers()).called(1);
+      verifyNoMoreInteractions(remoteDataSource);
+    });
+
+    test(
+        'should return a [APIFailure] when the call to the remote'
+        'source is unsuccessfull', () async {
+      //Arrange - Setup facts, Put Expected outputs or Initilize
+      when(
+        () => remoteDataSource.getUsers(),
+      ).thenThrow(tException);
+
+      //Act - Call the function that is to be tested
+      final result = await repoImpl.getUsers();
+
+      //Assert - Compare the actual result and expected result
+      expect(result, equals(Left(APIFailure.fromException(tException))));
+      verify(() => remoteDataSource.getUsers()).called(1);
       verifyNoMoreInteractions(remoteDataSource);
     });
   });
