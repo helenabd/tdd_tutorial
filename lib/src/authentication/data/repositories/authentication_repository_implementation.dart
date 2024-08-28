@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:tdd_tutorial/core/core.dart';
 import 'package:tdd_tutorial/core/utils/typedef.dart';
 
 import '../../authentication.dart';
@@ -29,8 +31,13 @@ class AuthenticationRepositoryImplementation
     // // check if when the remoteDataSource throws an exception, we return a
     // failure and if it doesn't throw and exception, we return the actual
     // expected data
-    _remoteDataSource.createUser(
-        createdAt: createdAt, name: name, avatar: avatar);
+    try {
+      await _remoteDataSource.createUser(
+          createdAt: createdAt, name: name, avatar: avatar);
+      return const Right(null);
+    } on APIException catch (e) {
+      return Left(APIFailure.fromException(e));
+    }
   }
 
   @override
