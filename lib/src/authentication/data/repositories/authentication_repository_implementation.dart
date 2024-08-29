@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:tdd_tutorial/core/core.dart';
-import 'package:tdd_tutorial/core/utils/typedef.dart';
 
 import '../../authentication.dart';
 
