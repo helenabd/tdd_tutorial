@@ -14,8 +14,8 @@ abstract class AuthenticationRemoteDataSource {
   Future<List<UserModel>> getUsers();
 }
 
-const kCreateUserEndpoint = '/users';
-const kGetUsersEndpoint = '/users';
+const kCreateUserEndpoint = '/test-api/users';
+const kGetUsersEndpoint = '/test-api/users';
 
 class AuthenticationRemoteDataSourceImpl
     implements AuthenticationRemoteDataSource {
@@ -34,7 +34,7 @@ class AuthenticationRemoteDataSourceImpl
     // right message when status code is the bad one
     try {
       final response = await _client.post(
-        Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+        Uri.https(kBaseUrl, kCreateUserEndpoint),
         body: jsonEncode({
           'createdAt': createdAt,
           'name': name,
@@ -55,7 +55,23 @@ class AuthenticationRemoteDataSourceImpl
 
   @override
   Future<List<UserModel>> getUsers() async {
-    // TODO: implement getUsers
-    throw UnimplementedError();
+    try {
+      final response = await _client.get(
+        Uri.https(kBaseUrl, kGetUsersEndpoint),
+      );
+
+      if (response.statusCode != 200) {
+        throw APIException(
+            message: response.body, statusCode: response.statusCode);
+      }
+
+      return List<DataMap>.from(jsonDecode(response.body) as List)
+          .map((userData) => UserModel.fromMap(userData))
+          .toList();
+    } on APIException {
+      rethrow;
+    } catch (e) {
+      throw APIException(message: e.toString(), statusCode: 505);
+    }
   }
 }

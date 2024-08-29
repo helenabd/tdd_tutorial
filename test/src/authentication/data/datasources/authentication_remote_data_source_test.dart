@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:tdd_tutorial/core/core.dart';
-import 'package:tdd_tutorial/core/utils/utils.dart';
 
 import 'package:tdd_tutorial/src/authentication/data/data.dart';
 
@@ -44,7 +43,7 @@ void main() {
 
       verify(
         () => client.post(
-          Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+          Uri.https(kBaseUrl, kCreateUserEndpoint),
           body: jsonEncode({
             'createdAt': 'createdAt',
             'name': 'name',
@@ -80,13 +79,72 @@ void main() {
 
       verify(
         () => client.post(
-          Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+          Uri.https(kBaseUrl, kCreateUserEndpoint),
           body: jsonEncode({
             'createdAt': 'createdAt',
             'name': 'name',
             'avatar': 'avatar',
           }),
         ),
+      ).called(1);
+
+      verifyNoMoreInteractions(client);
+    });
+  });
+
+  group('getUsers', () {
+    final tUsers = [const UserModel.empty()];
+    test('should return a [List<User>] when the status code is 200', () async {
+      //Arrange - Setup facts, Put Expected outputs or Initilize
+      when(
+        () => client.get(any()),
+      ).thenAnswer(
+        (_) async => http.Response(jsonEncode([tUsers.first.toMap()]), 200),
+      );
+
+      //Act - Call the function that is to be tested
+      final result = await remoteDataSource.getUsers();
+
+      //Assert - Compare the actual result and expected result
+      expect(result, equals(tUsers));
+
+      verify(
+        () => client.get(Uri.https(kBaseUrl, kGetUsersEndpoint)),
+      ).called(1);
+
+      verifyNoMoreInteractions(client);
+    });
+
+    test('should throw [APIException] when the status code is not 200',
+        () async {
+      //Arrange - Setup facts, Put Expected outputs or Initilize
+      when(
+        () => client.get(any()),
+      ).thenAnswer(
+        (_) async => http.Response(
+          'Server down, Server down,'
+          'I repeat Server down',
+          500,
+        ),
+      );
+
+      //Act - Call the function that is to be tested
+      final methodCall = remoteDataSource.getUsers;
+
+      //Assert - Compare the actual result and expected result
+      expect(
+        methodCall(),
+        throwsA(
+          const APIException(
+            message: 'Server down, Server down,'
+                'I repeat Server down',
+            statusCode: 500,
+          ),
+        ),
+      );
+
+      verify(
+        () => client.get(Uri.https(kBaseUrl, kGetUsersEndpoint)),
       ).called(1);
 
       verifyNoMoreInteractions(client);
