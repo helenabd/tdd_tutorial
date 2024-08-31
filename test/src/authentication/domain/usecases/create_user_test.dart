@@ -13,7 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:tdd_tutorial/src/authentication/authentication.dart';
-import 'package:tdd_tutorial/src/authentication/domain/usecases/create_user.dart';
 
 import 'authentication_repository.mock.dart';
 
